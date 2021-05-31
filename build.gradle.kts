@@ -6,6 +6,11 @@ plugins {
     id("io.micronaut.application") version "1.5.0"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.4.32"
     id("com.google.protobuf") version "0.8.15"
+    id ("org.jetbrains.kotlin.plugin.noarg") version "1.5.10"
+}
+
+allOpen {
+    annotation("io.micronaut.http.annotation.Controller")
 }
 
 version = "0.1"
@@ -17,6 +22,7 @@ repositories {
 }
 
 micronaut {
+    runtime("netty")
     testRuntime("junit5")
     processing {
         incremental(true)
@@ -26,7 +32,7 @@ micronaut {
 
 dependencies {
     implementation("io.micronaut:micronaut-runtime")
-    implementation("io.micronaut.grpc:micronaut-grpc-runtime")
+    implementation("io.micronaut.grpc:micronaut-grpc-client-runtime")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("javax.annotation:javax.annotation-api")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
@@ -37,6 +43,10 @@ dependencies {
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testImplementation("io.micronaut:micronaut-http-client")
+    testImplementation("org.mockito:mockito-core")
+    testImplementation("org.mockito:mockito-inline:3.8.0")
+    //Server
+    testImplementation("io.micronaut.grpc:micronaut-grpc-runtime")
 
 }
 
