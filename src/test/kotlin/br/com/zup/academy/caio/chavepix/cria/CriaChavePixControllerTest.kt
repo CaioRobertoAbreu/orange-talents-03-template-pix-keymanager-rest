@@ -3,7 +3,6 @@ package br.com.zup.academy.caio.chavepix.cria
 import br.com.zup.academy.caio.CadastraChaveResponse
 import br.com.zup.academy.caio.CriaChaveServiceGrpc
 import br.com.zup.academy.caio.chavepix.factory.GrpcClientFactory
-import io.grpc.StatusRuntimeException
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Replaces
 import io.micronaut.http.HttpRequest
@@ -11,7 +10,6 @@ import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -25,7 +23,7 @@ import javax.inject.Singleton
 internal class CriaChavePixControllerTest{
 
     @field:Inject
-    private lateinit var grpcClient: CriaChaveServiceGrpc.CriaChaveServiceBlockingStub
+    private lateinit var grpcMock: CriaChaveServiceGrpc.CriaChaveServiceBlockingStub
 
     @field:Inject
     @field:Client("/")
@@ -42,11 +40,11 @@ internal class CriaChavePixControllerTest{
             .setClienteId(clienteId)
             .build()
 
-        `when`(grpcClient.registrarChave(Mockito.any()))
+        `when`(grpcMock.registrarChave(Mockito.any()))
             .thenReturn(responseGrpc)
 
         val novaChavePix = CriaChavePixRequest(TipoChaveRequest.EMAIL, "email@email.com", TipoContaRequest.CONTA_CORRENTE)
-        val request = HttpRequest.POST("/pix/$clienteId", novaChavePix)
+        val request = HttpRequest.POST("/clientes/${clienteId}/pix", novaChavePix)
 
         //Acao
         val response = httpClient.toBlocking().exchange(request, CriaChavePixRequest::class.java)
@@ -60,10 +58,10 @@ internal class CriaChavePixControllerTest{
 
 @Factory
 @Replaces(factory = GrpcClientFactory::class)
-internal class mockitoStubFactory{
+internal class mockitoCriaChaveStubFactory{
 
     @Singleton
-    fun stubMock(): CriaChaveServiceGrpc.CriaChaveServiceBlockingStub? {
+    fun mockStub(): CriaChaveServiceGrpc.CriaChaveServiceBlockingStub? {
 
         return Mockito.mock(CriaChaveServiceGrpc.CriaChaveServiceBlockingStub::class.java)
     }
